@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useContext } from "react";
 import { IoMdArrowBack } from "react-icons/io";
+import { AppContext } from "../context/Context";
 
 const ThirdContent = ({ secondModalclicked }) => {
+  const { username, setUserName } = useContext(AppContext)
   return (
     <>
       <form>
@@ -35,6 +37,8 @@ const ThirdContent = ({ secondModalclicked }) => {
           </label>
           <div className="relative w-full border-[2px] py-2.5 rounded-lg border-gray-300  hover:border-black">
             <input
+              value={username}
+              onChange={(e) => setUserName(e.target.value)}
               type="text"
               name="UserName"
               placeholder="Husnain_Maroof"
@@ -50,11 +54,11 @@ const ThirdContent = ({ secondModalclicked }) => {
 
         <div className="w-full items-baseline mt-10">
           <button
-            
+
             type="button"
             className="border active:scale-95 bg-gray-300 font-semibold text-xl text-black border-gray-200 hover:bg-black/40 cursor-pointer  rounded-md w-full py-2"
           >
-        Create My Account
+            Create My Account
           </button>
         </div>
       </form>

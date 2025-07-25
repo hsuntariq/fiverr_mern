@@ -9,22 +9,19 @@ import { AppContext } from "../context/Context";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import { MdOutlineRemoveRedEye } from "react-icons/md";
 import ThirdContent from "./ThirdContent";
-
+import axios from 'axios'
+import { ClipLoader } from 'react-spinners'
+import toast from "react-hot-toast";
 const SecondContent = () => {
-  const { handleBackModal } = useContext(AppContext);
+  const { handleBackModal, setRulesStates, ruleStates, getEmail, getPassword, setGetEmail, setGetPassword } = useContext(AppContext);
   const [secondModalclicked, setSecondModalClicked] = useState(false);
 
   const [showPassword, setShowPassword] = useState(false);
-  const [getEmail, setGetEmail] = useState("");
+
   const submitBtnRef = useRef(null);
-  const [checkerror, setCheckError] = useState(false);
-  const [getPassword, setGetPassword] = useState("");
-  const [ruleStates, setRulesStates] = useState({
-    length: false,
-    upper: false,
-    lower: false,
-    number: false,
-  });
+
+  const [loadingEmail, setLoadingEmail] = useState(false)
+  const [exists, setExists] = useState('')
 
   const passwordRules = [
     { label: "At least 8 characters", key: "length" },
@@ -45,12 +42,54 @@ const SecondContent = () => {
   const SubmitData = () => {
     setSecondModalClicked(true);
   };
+
+
+  const checkMail = async () => {
+    try {
+      if (getEmail) {
+        setLoadingEmail(true)
+        const response = await axios.post('http://localhost:5174/api/users/verify-mail', { email: getEmail })
+        setLoadingEmail(false)
+        setExists(response.data)
+      }
+    } catch (error) {
+      toast.error(error)
+    }
+  }
+
+
+
+  useEffect(() => {
+    setLoadingEmail(true)
+    setTimeout(() => {
+      setLoadingEmail(false)
+    }, 500);
+  }, [getEmail])
+
+
+
+
+
+  useEffect(() => {
+    let debounce = setTimeout(() => {
+      checkMail()
+    }, 700);
+
+    return () => {
+      clearInterval(debounce)
+    }
+
+
+  }, [getEmail])
+
+
+
   return (
     <>
       {secondModalclicked ? (
         <ThirdContent secondModalclicked={setSecondModalClicked} />
       ) : (
-        <form className="bg-white h-[100%]">
+        <div className="bg-white h-[100%]">
           <div
             onClick={handleBackModal}
             className="flex gap-2 cursor-pointer items-center active:scale-95"
@@ -63,7 +102,7 @@ const SecondContent = () => {
               <h3 className="text-xl font-semibold py-3">
                 Continue with your email
               </h3>
-              <div className="w-full py-3">
+              <div className="w-full relative py-3">
                 <label htmlFor="Email" className="font-semibold text-md">
                   Email
                 </label>
@@ -77,6 +116,7 @@ const SecondContent = () => {
                   className="block py-1.5 w-full border-2 ps-1.5 rounded-md text-lg font-semibold border-gray-300 focus:border-2 focus:border-gray-300 outline-0 placeholder:text-lg placeholder:font-normal hover:border-black
                 "
                 />
+                {loadingEmail && <ClipLoader color="#6a7282" size={15} className="absolute text-gray-500 right-3 top-[63%] w-[20px] h-[20px] -translate-y-1/2" />}
               </div>
               <div className="w-full py-3">
                 <label htmlFor="Email" className="font-semibold text-md">
@@ -117,20 +157,18 @@ const SecondContent = () => {
                 {passwordRules.map((rule, index) => (
                   <div key={index} className="flex items-center gap-2">
                     <span
-                      className={`border-2 rounded-full p-1 flex items-center justify-center w-5 h-5 ${
-                        ruleStates[rule.key]
-                          ? "bg-green-500 text-white border-green-500"
-                          : "border-gray-300 text-gray-500"
-                      }`}
+                      className={`border-2 rounded-full p-1 flex items-center justify-center w-5 h-5 ${ruleStates[rule.key]
+                        ? "bg-green-500 text-white border-green-500"
+                        : "border-gray-300 text-gray-500"
+                        }`}
                     >
                       <IoMdCheckmark size={12} />
                     </span>
                     <p
-                      className={`text-sm font-semibold ${
-                        ruleStates[rule.key]
-                          ? "text-green-600 line-through"
-                          : "text-gray-600"
-                      }`}
+                      className={`text-sm font-semibold ${ruleStates[rule.key]
+                        ? "text-green-600 line-through"
+                        : "text-gray-600"
+                        }`}
                     >
                       {rule.label}
                     </p>
@@ -144,13 +182,13 @@ const SecondContent = () => {
                 ref={submitBtnRef}
                 onClick={SubmitData}
                 type="button"
-                className="border active:scale-95 bg-gray-300 font-semibold text-xl text-black border-gray-200 hover:bg-black/40 cursor-pointer  rounded-md w-full py-2"
+                className={`border active:scale-95  font-semibold text-xl text-black border-gray-200 hover:bg-black/40 cursor-pointer  rounded-md w-full py-2 bg-green-500`}
               >
-                Continue
+                {exists == 'exists' ? 'Sign In' : 'Continue'}
               </button>
             </div>
           </div>
-        </form>
+        </div>
       )}
     </>
   );

@@ -4,8 +4,12 @@ import colors from 'colors'
 import { userRouter } from './routes/userRoutes.js'
 import { errorHandler } from './middlewares/errorMiddleware.js'
 import { connectDB } from './config/connect.js'
+import cors from 'cors'
 dotenv.config()
 const app = express()
+
+app.use(cors())
+
 
 connectDB()
 

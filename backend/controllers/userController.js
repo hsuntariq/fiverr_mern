@@ -50,3 +50,21 @@ export const registerUser = async (req, res) => {
 
 
 }
+
+export const checkMail = async (req, res) => {
+    const { email } = req.body
+    if (!email) {
+        res.status(401)
+        throw new Error('Please enter a mail')
+
+    }
+    let isUser = await User.findOne({ email })
+
+    if (isUser) {
+        res.send('exists')
+    } else {
+        res.send('not exists')
+    }
+
+
+}
