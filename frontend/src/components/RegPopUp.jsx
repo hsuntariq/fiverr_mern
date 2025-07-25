@@ -17,7 +17,7 @@ const RegPopUp = () => {
                     <div className="flex overflow-hidden rounded-lg">
                         <img width={'50%'} className='' src="https://fiverr-res.cloudinary.com/npm-assets/layout-service/standard.0638957.png" alt="" />
                         <div className="flex  bg-white justify-between p-5 flex-col">
-                            <form className='bg-white p-4 w-full  flex flex-col justify-center'>
+                            <form className='bg-white p-4  '>
                                 {clicked ? <SecondContent /> : <FirstContent />}
                             </form>
                             <p className="text-xs text-gray-500">

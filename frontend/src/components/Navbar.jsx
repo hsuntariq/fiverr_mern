@@ -7,7 +7,7 @@ const Navbar = () => {
     return (
         <>
             <RegPopUp />
-            <div className="container flex justify-around mx-auto p-4">
+            <div className=" side_padding  flex justify-between mx-auto py-4">
                 <img src="/svgs/logo.svg" alt="logo" />
                 <ul className="unstyled flex gap-5 ">
                     <li className='flex font-semibold text-[15px]  items-center'>Fiverr Pro <RiArrowDropDownLine size={25} /> </li>
