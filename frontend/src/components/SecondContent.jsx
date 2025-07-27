@@ -1,27 +1,31 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
-import {
-  IoIosCheckmark,
-  IoIosCheckmarkCircleOutline,
-  IoMdArrowBack,
-  IoMdCheckmark,
-} from "react-icons/io";
+import React, { useContext, useEffect, useState } from "react";
+import { IoMdArrowBack, IoMdCheckmark } from "react-icons/io";
 import { AppContext } from "../context/Context";
-import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import { MdOutlineRemoveRedEye } from "react-icons/md";
+import { FaRegEyeSlash } from "react-icons/fa";
 import ThirdContent from "./ThirdContent";
-import axios from 'axios'
-import { ClipLoader } from 'react-spinners'
+import axios from "axios";
+import { PuffLoader } from "react-spinners";
 import toast from "react-hot-toast";
+
 const SecondContent = () => {
-  const { handleBackModal, setRulesStates, ruleStates, getEmail, getPassword, setGetEmail, setGetPassword } = useContext(AppContext);
-  const [secondModalclicked, setSecondModalClicked] = useState(false);
-
+  const {
+    handleBackModal,
+    password,
+    setEmail,
+    email,
+    setPassword,
+    setRulesStates,
+    ruleStates,
+  } = useContext(AppContext);
+  const [isPasswordValid, setIsPasswordValid] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-
-  const submitBtnRef = useRef(null);
-
-  const [loadingEmail, setLoadingEmail] = useState(false)
-  const [exists, setExists] = useState('')
+  const [clicked, setClicked] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [exist, setExist] = useState("");
+  const handleBack = () => {
+    setClicked(false);
+  };
 
   const passwordRules = [
     { label: "At least 8 characters", key: "length" },
@@ -31,109 +35,135 @@ const SecondContent = () => {
   ];
 
   useEffect(() => {
-    setRulesStates({
-      length: getPassword.length >= 8,
-      upper: /[A-Z]/.test(getPassword),
-      lower: /[a-z]/.test(getPassword),
-      number: /\d/.test(getPassword),
-    });
-  }, [getPassword]);
+    let updatedRules = {
+      length: password.length >= 8,
+      upper: /[A-Z]/.test(password),
+      lower: /[a-z]/.test(password),
+      number: /\d/.test(password),
+    };
 
-  const SubmitData = () => {
-    setSecondModalClicked(true);
-  };
+    setRulesStates(updatedRules);
 
+    const allPassedRules = Object.values(updatedRules).every(Boolean);
+
+    setIsPasswordValid(allPassedRules);
+  }, [password]);
 
   const checkMail = async () => {
     try {
-      if (getEmail) {
-        setLoadingEmail(true)
-        const response = await axios.post('http://localhost:5174/api/users/verify-mail', { email: getEmail })
-        setLoadingEmail(false)
-        setExists(response.data)
+      if (!email) return;
+      if (email) {
+        setLoading(true);
+        let response = await axios.post(
+          `http://localhost:5170/api/users/verify-mail`,
+          { email }
+        );
+        setExist(response.data);
+        setLoading(false);
       }
     } catch (error) {
-      toast.error(error)
+      toast.error(error);
     }
-  }
-
-
-
-  useEffect(() => {
-    setLoadingEmail(true)
-    setTimeout(() => {
-      setLoadingEmail(false)
-    }, 500);
-  }, [getEmail])
-
-
-
-
+  };
 
   useEffect(() => {
     let debounce = setTimeout(() => {
-      checkMail()
-    }, 700);
+      checkMail();
+    }, 500);
 
     return () => {
-      clearInterval(debounce)
+      clearTimeout(debounce);
+    };
+  }, [email]);
+
+  useEffect(() => {
+    let loadingAnimation;
+
+    if (email) {
+      setLoading(true);
+
+      loadingAnimation = setTimeout(() => {
+        setLoading(false);
+      }, 700);
     }
 
+    return () => {
+      if (loadingAnimation) {
+        clearTimeout(loadingAnimation);
+      }
+    };
+  }, [email]);
 
-  }, [getEmail])
+  // const checkPassword = async () => {
+  //   if (exist !== "Email Already Existed" || !password) return;
+  //   try {
+  //     let response = await axios.post(
+  //       "http://localhost:5170/api/users/verify-mail",
+  //       password
+  //     );
+  //     console.log(response);
+  //   } catch (error) {
+  //     toast.error(error);
+  //   }
+  // };
 
-
+  // useEffect(() => {
+  //   checkPassword();
+  // }, [password]);
 
   return (
     <>
-      {secondModalclicked ? (
-        <ThirdContent secondModalclicked={setSecondModalClicked} />
+      {clicked ? (
+        <ThirdContent handleBack={handleBack} />
       ) : (
-        <div className="bg-white h-[100%]">
+        <div className="bg-white   flex flex-col  h-full  ">
           <div
             onClick={handleBackModal}
-            className="flex gap-2 cursor-pointer items-center active:scale-95"
+            className="flex gap-2 cursor-pointer items-center"
           >
             <IoMdArrowBack />
             <h2 className="text-sm font-semibold">Back</h2>
           </div>
-          <div className=" flex justify-between flex-col h-[100%]  ">
+
+          <div className=" flex justify-between flex-col h-full  ">
             <div>
               <h3 className="text-xl font-semibold py-3">
                 Continue with your email
               </h3>
-              <div className="w-full relative py-3">
+              <div className="w-full relative py-1.5">
                 <label htmlFor="Email" className="font-semibold text-md">
                   Email
                 </label>
-                <input
-                  name="email"
-                  value={getEmail}
-                  onChange={(e) => setGetEmail(e.target.value)}
-                  required={true}
-                  type="email"
-                  placeholder="name@email.com"
-                  className="block py-1.5 w-full border-2 ps-1.5 rounded-md text-lg font-semibold border-gray-300 focus:border-2 focus:border-gray-300 outline-0 placeholder:text-lg placeholder:font-normal hover:border-black
-                "
-                />
-                {loadingEmail && <ClipLoader color="#6a7282" size={15} className="absolute text-gray-500 right-3 top-[63%] w-[20px] h-[20px] -translate-y-1/2" />}
+                <div className="relative  py-1.5 border-2 rounded-md border-gray-300 focus:border-2 focus:border-gray-300 hover:border-black">
+                  <input
+                    name="email"
+                    required={true}
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Name@email.com"
+                    className=" w-[85%] border-0  ps-1.5 text-md font-semibold  outline-0  placeholder:font-normal"
+                  />
+                  <div className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-500">
+                    {loading && <PuffLoader size={20} color="#6a7282" />}
+                  </div>
+                </div>
               </div>
-              <div className="w-full py-3">
+              <div className="w-full py-1.5">
                 <label htmlFor="Email" className="font-semibold text-md">
                   Password
                 </label>
                 <div className="relative  py-1.5 border-2 rounded-md border-gray-300 focus:border-2 focus:border-gray-300 hover:border-black">
                   <input
                     required={true}
-                    value={getPassword}
-                    onChange={(e) => setGetPassword(e.target.value)}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     name="password"
                     type={showPassword ? "text" : "password"}
                     placeholder="Enter Your Password"
-                    className="  w-full border-0  ps-1.5 text-lg font-semibold  outline-0 placeholder:text-lg placeholder:font-normal 
+                    className="  w-[85%] border-0  ps-1.5 text-md font-semibold  outline-0  placeholder:font-normal 
                 "
                   />
-
                   <div
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute top-1/2 right-4 -translate-y-1/2"
@@ -153,22 +183,24 @@ const SecondContent = () => {
                 </div>
               </div>
 
-              <div className="mt-4 space-y-2">
+              <div className="my-4 space-y-2">
                 {passwordRules.map((rule, index) => (
                   <div key={index} className="flex items-center gap-2">
                     <span
-                      className={`border-2 rounded-full p-1 flex items-center justify-center w-5 h-5 ${ruleStates[rule.key]
-                        ? "bg-green-500 text-white border-green-500"
-                        : "border-gray-300 text-gray-500"
-                        }`}
+                      className={`border-2 rounded-full p-1 flex items-center justify-center w-5 h-5 ${
+                        ruleStates[rule.key]
+                          ? "bg-green-500 text-white border-green-500"
+                          : "border-gray-300 text-gray-500"
+                      }`}
                     >
                       <IoMdCheckmark size={12} />
                     </span>
                     <p
-                      className={`text-sm font-semibold ${ruleStates[rule.key]
-                        ? "text-green-600 line-through"
-                        : "text-gray-600"
-                        }`}
+                      className={`text-sm font-semibold ${
+                        ruleStates[rule.key]
+                          ? "text-green-600 line-through"
+                          : "text-gray-600"
+                      }`}
                     >
                       {rule.label}
                     </p>
@@ -179,12 +211,16 @@ const SecondContent = () => {
 
             <div className="w-full items-baseline">
               <button
-                ref={submitBtnRef}
-                onClick={SubmitData}
                 type="button"
-                className={`border active:scale-95  font-semibold text-xl text-black border-gray-200 hover:bg-black/40 cursor-pointer  rounded-md w-full py-2 bg-green-500`}
+                disabled={!isPasswordValid}
+                onClick={() => setClicked(true)}
+                className={`py-1.5 border-2 rounded-md  w-full font-semibold  ${
+                  !isPasswordValid
+                    ? "cursor-not-allowed text-gray-400 bg-gray-100 border-gray-300"
+                    : "cursor-pointer bg-gray-950 text-white  hover:bg-gray-950/80 hover:text-white border-gray-950"
+                }  `}
               >
-                {exists == 'exists' ? 'Sign In' : 'Continue'}
+                {exist == "exists" ? "Sign In" : "Continue"}
               </button>
             </div>
           </div>
