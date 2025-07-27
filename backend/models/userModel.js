@@ -12,6 +12,10 @@ const userSchema = mongoose.Schema({
     username: {
         type: String,
         required: [true, 'Please enter the username']
+    },
+    otp: {
+        type: String,
+        default: null
     }
 }, {
     timestamps: true
