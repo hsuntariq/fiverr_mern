@@ -1,7 +1,19 @@
-import mongoose from 'mongoose'
+import mongoose from "mongoose"
+
 
 export const connectDB = async () => {
-    await mongoose.connect(process.env.MONGO_URL)
-    console.log(`Database connected on host:${mongoose.connection.host.cyan}`)
+
+    try {
+
+        await mongoose.connect(process.env.MONGO_URL)
+
+        console.log(`Data Base Connected on ${mongoose.connection.host.cyan}`);
+
+
+    } catch (error) {
+        console.log(error);
+
+    }
+
 
 }

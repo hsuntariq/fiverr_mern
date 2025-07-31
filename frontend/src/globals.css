@@ -3,6 +3,7 @@
 
 
 
+
 .side_padding{
     @apply xl:px-[100px] md:px-[70px] px-[30px]
 }
