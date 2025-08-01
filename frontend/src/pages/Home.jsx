@@ -1,12 +1,12 @@
-import React from 'react'
-import Navbar from '../components/Navbar'
+import React from "react";
+import Navbar from "../Components/Navbar";
 
 const Home = () => {
-    return (
-        <>
-            <Navbar />
-        </>
-    )
-}
+  return (
+    <div className="w-full">
+      <Navbar />
+    </div>
+  );
+};
 
-export default Home
+export default Home;

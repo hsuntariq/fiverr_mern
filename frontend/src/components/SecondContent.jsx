@@ -17,7 +17,17 @@ const SecondContent = () => {
     setPassword,
     setRulesStates,
     ruleStates,
+    setRegPopUpPic,
   } = useContext(AppContext);
+
+  useEffect(() => {
+    setRegPopUpPic({
+      intalsPic: true,
+      UserNamePic: false,
+      otpPic: false,
+    });
+  }, []);
+
   const [isPasswordValid, setIsPasswordValid] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [clicked, setClicked] = useState(false);
@@ -43,7 +53,7 @@ const SecondContent = () => {
     };
 
     setRulesStates(updatedRules);
-    // [true,true,false,false]
+
     const allPassedRules = Object.values(updatedRules).every(Boolean);
 
     setIsPasswordValid(allPassedRules);
@@ -55,7 +65,7 @@ const SecondContent = () => {
       if (email) {
         setLoading(true);
         let response = await axios.post(
-          `http://localhost:5174/api/users/verify-mail`,
+          "http://localhost:5174/api/users/verify-mail",
           { email }
         );
         setExist(response.data);
@@ -94,29 +104,12 @@ const SecondContent = () => {
     };
   }, [email]);
 
-  // const checkPassword = async () => {
-  //   if (exist !== "Email Already Existed" || !password) return;
-  //   try {
-  //     let response = await axios.post(
-  //       "http://localhost:5170/api/users/verify-mail",
-  //       password
-  //     );
-  //     console.log(response);
-  //   } catch (error) {
-  //     toast.error(error);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   checkPassword();
-  // }, [password]);
-
   return (
     <>
       {clicked ? (
         <ThirdContent handleBack={handleBack} />
       ) : (
-        <div className="bg-white   flex flex-col  h-full  ">
+        <div className="bg-white flex flex-col h-full  w-full">
           <div
             onClick={handleBackModal}
             className="flex gap-2 cursor-pointer items-center"
@@ -187,18 +180,20 @@ const SecondContent = () => {
                 {passwordRules.map((rule, index) => (
                   <div key={index} className="flex items-center gap-2">
                     <span
-                      className={`border-2 rounded-full p-1 flex items-center justify-center w-5 h-5 ${ruleStates[rule.key]
-                        ? "bg-green-500 text-white border-green-500"
-                        : "border-gray-300 text-gray-500"
-                        }`}
+                      className={`border-2 rounded-full p-1 flex items-center justify-center w-5 h-5 ${
+                        ruleStates[rule.key]
+                          ? "bg-green-500 text-white border-green-500"
+                          : "border-gray-300 text-gray-500"
+                      }`}
                     >
                       <IoMdCheckmark size={12} />
                     </span>
                     <p
-                      className={`text-sm font-semibold ${ruleStates[rule.key]
-                        ? "text-green-600 line-through"
-                        : "text-gray-600"
-                        }`}
+                      className={`text-sm font-semibold ${
+                        ruleStates[rule.key]
+                          ? "text-green-600 line-through"
+                          : "text-gray-600"
+                      }`}
                     >
                       {rule.label}
                     </p>
@@ -212,12 +207,13 @@ const SecondContent = () => {
                 type="button"
                 disabled={!isPasswordValid}
                 onClick={() => setClicked(true)}
-                className={`py-1.5 border-2 rounded-md  w-full font-semibold  ${!isPasswordValid
-                  ? "cursor-not-allowed text-gray-400 bg-gray-100 border-gray-300"
-                  : "cursor-pointer bg-gray-950 text-white  hover:bg-gray-950/80 hover:text-white border-gray-950"
-                  }  `}
+                className={`py-1.5 border-2 rounded-md  w-full font-semibold  ${
+                  !isPasswordValid
+                    ? "cursor-not-allowed text-gray-400 bg-gray-100 border-gray-300"
+                    : "cursor-pointer bg-gray-950 text-white  hover:bg-gray-950/80 hover:text-white border-gray-950"
+                }  `}
               >
-                {exist == "exists" ? "Sign In" : "Continue"}
+                {exist == "Email Already Existed" ? "Sign In" : "Continue"}
               </button>
             </div>
           </div>

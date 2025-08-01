@@ -1,16 +1,15 @@
 import React from "react";
 import "./globals.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Home from "./pages/Home";
-import { Toaster } from "react-hot-toast";
-
+import Home from "./Pages/Home";
+import { Toaster} from "react-hot-toast" 
 const App = () => {
   return (
     <>
-      <Toaster />
+      <Toaster/>
       <Router>
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Home/>}></Route>
         </Routes>
       </Router>
     </>

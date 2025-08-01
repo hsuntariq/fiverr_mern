@@ -1,160 +1,147 @@
-import React, { useContext, useEffect, useState } from "react";
-import { IoMdArrowBack, IoMdCheckmark } from "react-icons/io";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { AppContext } from "../context/Context";
-import { MdOutlineRemoveRedEye } from "react-icons/md";
-import { FaRegEyeSlash } from "react-icons/fa";
-import ThirdContent from "./ThirdContent";
-import axios from "axios";
 import { PuffLoader } from "react-spinners";
-import toast from "react-hot-toast";
 
-const SecondContent = () => {
-    const {
-        handleBackModal,
-        password,
-        setEmail,
-        email,
-        setPassword,
-        setRulesStates,
-        ruleStates,
-    } = useContext(AppContext);
-    const [isPasswordValid, setIsPasswordValid] = useState(false);
-    const [showPassword, setShowPassword] = useState(false);
-    const [clicked, setClicked] = useState(false);
-    const [loading, setLoading] = useState(false);
-    const [exist, setExist] = useState("");
-    const handleBack = () => {
-        setClicked(false);
-    };
+const Otp = () => {
+  const { setRegPopUpPic } = useContext(AppContext);
+  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+  const inputRefs = useRef([]);
+  const [validOTP, setValidOTP] = useState(false);
+  const [succes, setSucces] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [resend, setResend] = useState(false);
+  const [resendTimer, setResendTimer] = useState(30);
+  useEffect(() => {
+    setRegPopUpPic({
+      intalsPic: false,
+      UserNamePic: false,
+      otpPic: true,
+    });
+  }, []);
 
-    const passwordRules = [
-        { label: "At least 8 characters", key: "length" },
-        { label: "At least 1 uppercase letter", key: "upper" },
-        { label: "At least 1 lowercase letter", key: "lower" },
-        { label: "At least 1 number", key: "number" },
-    ];
+  const handleChange = (e, index) => {
+    const value = e.target.value.replace(/[^0-9]/g, "");
 
-    useEffect(() => {
-        let updatedRules = {
-            length: password.length >= 8,
-            upper: /[A-Z]/.test(password),
-            lower: /[a-z]/.test(password),
-            number: /\d/.test(password),
-        };
+    if (value.length > 1) return;
 
-        setRulesStates(updatedRules);
-        // [true,true,false,false]
-        const allPassedRules = Object.values(updatedRules).every(Boolean);
+    const updatedOtp = [...otp];
+    updatedOtp[index] = value;
+    setOtp(updatedOtp);
 
-        setIsPasswordValid(allPassedRules);
-    }, [password]);
+    if (value && index < 5) {
+      inputRefs.current[index + 1]?.focus();
+    }
+  };
 
-    const checkMail = async () => {
-        try {
-            if (!email) return;
-            if (email) {
-                setLoading(true);
-                let response = await axios.post(
-                    `http://localhost:5174/api/users/verify-mail`,
-                    { email }
-                );
-                setExist(response.data);
-                setLoading(false);
-            }
-        } catch (error) {
-            toast.error(error);
-        }
-    };
+  const handleKeyDown = (e, index) => {
+    if (e.key === "Backspace" && otp[index] === "" && index > 0) {
+      inputRefs.current[index - 1]?.focus();
+    }
+  };
 
-    useEffect(() => {
-        let debounce = setTimeout(() => {
-            checkMail();
-        }, 500);
+  useEffect(() => {
+    const enteredOtp = otp.join("");
 
-        return () => {
-            clearTimeout(debounce);
-        };
-    }, [email]);
+    if (enteredOtp.length >= 6) {
+      setValidOTP(true);
+    } else {
+      setValidOTP(false);
+    }
+  }, [otp]);
 
-    useEffect(() => {
-        let loadingAnimation;
+const handleResend = () => {
+  setOtp(["", "", "", "", "", ""]);
+  setResend(true);
+  setResendTimer(30); 
 
-        if (email) {
-            setLoading(true);
-
-            loadingAnimation = setTimeout(() => {
-                setLoading(false);
-            }, 700);
-        }
-
-        return () => {
-            if (loadingAnimation) {
-                clearTimeout(loadingAnimation);
-            }
-        };
-    }, [email]);
-
-    // const checkPassword = async () => {
-    //   if (exist !== "Email Already Existed" || !password) return;
-    //   try {
-    //     let response = await axios.post(
-    //       "http://localhost:5170/api/users/verify-mail",
-    //       password
-    //     );
-    //     console.log(response);
-    //   } catch (error) {
-    //     toast.error(error);
-    //   }
-    // };
-
-    // useEffect(() => {
-    //   checkPassword();
-    // }, [password]);
-
-    return (
-        <>
-            {clicked ? (
-                <ThirdContent handleBack={handleBack} />
-            ) : (
-                <div className="bg-white   flex flex-col  h-full  ">
-                    <div
-                        onClick={handleBackModal}
-                        className="flex gap-2 cursor-pointer items-center"
-                    >
-                        <IoMdArrowBack />
-                        <h2 className="text-sm font-semibold">Back</h2>
-                    </div>
-
-                    <div className=" flex justify-between flex-col h-full  ">
-
-                        <div className=" bg-white p-10 flex flex-col justify-between h-[600px]">
-                            <div>
-                                <h2 className="text-2xl font-bold">Confirm your email</h2>
-                                <p className="text-gray-600 mt-2">Enter the verification code we emailed to: <span className="font-medium">testttt@mail.com</span> <span className="text-blue-600 underline cursor-pointer">(Use a different email)</span></p>
-                                <div className="flex space-x-2 mt-6">
-                                    {Array(6).fill().map((_, index) => (
-                                        <input
-                                            key={index}
-                                            type="text"
-                                            maxLength="1"
-                                            className="w-12 h-12 text-center border-2 border-gray-300 rounded focus:border-blue-500 focus:outline-none"
-                                        />
-                                    ))}
-                                </div>
-                                <p className="text-blue-600 underline mt-4 cursor-pointer">Resend code</p>
-                            </div>
-                            <div className="flex flex-col space-y-4">
-                                <button className="bg-gray-200 text-gray-700 py-2 rounded hover:bg-gray-300">Remind me later</button>
-                                <button className="bg-gray-200 text-gray-700 py-2 rounded hover:bg-gray-300">Submit</button>
-                            </div>
-                        </div>
-
-
-                    </div>
-                </div>
-            )}
-        </>
-    );
+  const timerInterval = setInterval(() => {
+    setResendTimer((prev) => {
+      if (prev <= 1) {
+        clearInterval(timerInterval);
+        setResend(false);
+        return 30;
+      }
+      return prev - 1;
+    });
+  }, 1000);
 };
 
-export default SecondContent;
+  const handelSubmit = () => {};
+
+  return (
+    <>
+      <div className="bg-white w-auto flex flex-col justify-between h-full rounded-l-lg p-4 ">
+        <div className="">
+          <div>
+            <h3 className="text-xl font-semibold py-3">Confirm your email</h3>
+
+            <p className="text-md font-semibold text-gray-500 py-0.5">
+              Enter the verification code we emailed to:
+            </p>
+
+            <p className="text-md font-bold text-gray-700 py-1.5">
+              email@gmail.com.
+            </p>
+          </div>
+          <div className="flex items-center justify-center gap-x-1 mt-10">
+            {otp.map((digit, index) => (
+              <input
+                key={index}
+                type="text"
+                inputMode="numeric"
+                maxLength="1"
+                value={digit}
+                onChange={(e) => handleChange(e, index)}
+                onKeyDown={(e) => handleKeyDown(e, index)}
+                ref={(el) => (inputRefs.current[index] = el)}
+                className={`w-10 md:w-12 h-10 md:h-12 text-2xl text-center border  rounded focus:outline-none focus:ring-2 focus:ring-gray-800 ${
+                  succes ? "border-red-500" : "border-gray-300"
+                } `}
+              />
+            ))}
+          </div>
+          {succes && (
+            <p className="text-red-500 py-2 font-semibold my-1.5">
+              You've entered the wrong code. Try again.
+            </p>
+          )}
+
+          <button
+            onClick={handleResend}
+            type="button"
+            disabled={resend}
+            className={`underline font-semibold my-1.5 text-md ${
+              resend
+                ? "text-gray-400 cursor-not-allowed "
+                : "text-gray-800 cursor-pointer"
+            }`}
+          >
+            {resend && <span className="px-1 ">{resendTimer}s</span>}
+            Resend Code
+          </button>
+        </div>
+
+        <div className="w-full  flex items-baseline justify-between">
+          <p className="underline font-bold   md:text-lg text-gray-700 cursor-pointer">
+            Remind me later
+          </p>
+
+          <button
+            type="button"
+            disabled={!validOTP}
+            onClick={handelSubmit}
+            className={`border-[1px] w-20 flex items-center justify-center py-1.5 font-bold   rounded-lg text-lg ${
+              !validOTP
+                ? "cursor-not-allowed bg-gray-400  border-gray-400 text-gray-100 "
+                : "border-gray-800 bg-gray-800 cursor-pointer text-white "
+            }`}
+          >
+            {loading ? <PuffLoader size={20} color="#ffffff" /> : " Submit"}
+          </button>
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default Otp;
