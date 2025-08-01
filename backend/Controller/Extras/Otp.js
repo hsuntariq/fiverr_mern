@@ -18,7 +18,7 @@ export const sendOTP = (email, otp) => {
 
 
     let mailOption = {
-        from: "husnainmaroof95@gmail.com",
+        from: "hsuntariq@gmail.com",
         to: email,
         subject: "OTP Verification",
         html: `<!DOCTYPE html>

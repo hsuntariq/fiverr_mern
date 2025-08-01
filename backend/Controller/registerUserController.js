@@ -99,7 +99,7 @@ export const verifyOtp = async (req, res) => {
 
 
 
-    if (otp == findUsers.otp) {
+    if (findUsers.otp == otp) {
         findUsers.otp = "done"
         findUsers.save()
     } else {
@@ -136,7 +136,7 @@ export const checkSignInPass = async (req, res) => {
         res.send("Password Matched")
     } else {
         res.status(401)
-    
+
         throw new Error("Invalid Passwords ")
     }
 
@@ -146,3 +146,24 @@ export const checkSignInPass = async (req, res) => {
 }
 
 
+
+
+export const resendOTP = async (req, res) => {
+    const user_id = req.params.user_id
+    const { email } = req.body
+    let findUser = await Users.findById(user_id)
+
+    if (!findUser) {
+        res.status(404)
+        throw new Error('User not found')
+    }
+
+    let otp = otpgenerator.generate(6, { digits: true, upperCaseAlphabets: false, lowerCaseAlphabets: false, specialChars: false })
+
+    sendOTP(email, otp)
+
+    findUser.otp = otp
+    await findUser.save()
+    res.send(findUser)
+
+}

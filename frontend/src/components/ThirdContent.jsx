@@ -111,6 +111,8 @@ const ThirdContent = ({ handleBack }) => {
         { email, password, userName }
       );
 
+      localStorage.setItem('user', JSON.stringify(response.data))
+
       console.log(response.data);
     } catch (error) {
       toast.error(error);
@@ -212,11 +214,10 @@ const ThirdContent = ({ handleBack }) => {
               onClick={handelSignUp}
               type="button"
               disabled={!isUserNameRulesValid}
-              className={`py-1.5 border-2 rounded-md border-gray-300 w-full font-semibold relative ${
-                !isUserNameRulesValid
-                  ? "cursor-not-allowed text-gray-400 bg-gray-100"
-                  : "cursor-pointer bg-gray-800 text-white hover:bg-gray-800/88 hover:text-white"
-              }`}
+              className={`py-1.5 border-2 rounded-md border-gray-300 w-full font-semibold relative ${!isUserNameRulesValid
+                ? "cursor-not-allowed text-gray-400 bg-gray-100"
+                : "cursor-pointer bg-gray-800 text-white hover:bg-gray-800/88 hover:text-white"
+                }`}
             >
               {loading ? (
                 <div
