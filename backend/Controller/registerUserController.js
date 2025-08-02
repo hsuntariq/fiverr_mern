@@ -2,6 +2,7 @@ import { Users } from "../Models/usersModel.js"
 import bcrypt from "bcrypt";
 import { sendOTP } from "./Extras/Otp.js";
 import otpgenerator from "otp-generator"
+import { sendResetMail } from "./Extras/resetLink.js";
 
 
 export const registerUsers = async (req, res) => {
@@ -166,4 +167,23 @@ export const resendOTP = async (req, res) => {
     await findUser.save()
     res.send(findUser)
 
+}
+
+
+export const sendResetLink = async (req, res) => {
+    const { email } = req.body
+    let checkUser = await Users.findOne({ email })
+    if (!checkUser) {
+        res.status(404)
+        throw new Error('Invalid Email')
+    }
+
+    // // genetate the reset token
+    let token = otpgenerator.generate(50)
+    checkUser.resetToken = token
+    await checkUser.save()
+    // send the reset link to the user
+    let link = `http://localhost:5173/reset-password/${token}`
+    sendResetMail(email, link)
+    res.send(checkUser)
 }

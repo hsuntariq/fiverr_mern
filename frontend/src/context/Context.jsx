@@ -6,6 +6,7 @@ export const AppProvider = ({ children }) => {
   const [clicked, setClicked] = useState(false);
 
   const [password, setPassword] = useState("");
+  const [showPassScreen, setShowPassScreen] = useState(false);
   const [email, setEmail] = useState("");
   const [userName, setUserName] = useState("");
   const [RegPopUpPic, setRegPopUpPic] = useState({
@@ -45,6 +46,8 @@ export const AppProvider = ({ children }) => {
         setUserName,
         RegPopUpPic,
         setRegPopUpPic,
+        showPassScreen,
+        setShowPassScreen
       }}
     >
       {children}

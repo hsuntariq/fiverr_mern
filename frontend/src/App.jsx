@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./Pages/Home";
 import { Toaster } from "react-hot-toast"
 import Main from "./pages/Main";
+import AddResetPassword from "./components/AddResetPassword";
 const App = () => {
   return (
     <>
@@ -12,6 +13,7 @@ const App = () => {
         <Routes>
           <Route path="/" element={<Home />}></Route>
           <Route path='/home' element={<Main />} />
+          <Route path='/reset-password/:token' element={<AddResetPassword />} />
         </Routes>
       </Router>
     </>

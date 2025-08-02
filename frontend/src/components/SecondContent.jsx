@@ -7,7 +7,8 @@ import ThirdContent from "./ThirdContent";
 import axios from "axios";
 import { PuffLoader } from "react-spinners";
 import toast from "react-hot-toast";
-
+import { Link } from "react-router-dom";
+import ResetPassword from "./ResetPassword";
 const SecondContent = () => {
   const {
     handleBackModal,
@@ -18,6 +19,8 @@ const SecondContent = () => {
     setRulesStates,
     ruleStates,
     setRegPopUpPic,
+    setShowPassScreen,
+    showPassScreen
   } = useContext(AppContext);
 
   useEffect(() => {
@@ -109,115 +112,115 @@ const SecondContent = () => {
       {clicked ? (
         <ThirdContent handleBack={handleBack} />
       ) : (
-        <div className="bg-white flex flex-col h-full  w-full">
-          <div
-            onClick={handleBackModal}
-            className="flex gap-2 cursor-pointer items-center"
-          >
-            <IoMdArrowBack />
-            <h2 className="text-sm font-semibold">Back</h2>
-          </div>
+        showPassScreen ? <ResetPassword /> : (
+          <div className="bg-white flex flex-col h-full  w-full">
+            <div
+              onClick={handleBackModal}
+              className="flex gap-2 cursor-pointer items-center"
+            >
+              <IoMdArrowBack />
+              <h2 className="text-sm font-semibold">Back</h2>
+            </div>
 
-          <div className=" flex justify-between flex-col h-full  ">
-            <div>
-              <h3 className="text-xl font-semibold py-3">
-                Continue with your email
-              </h3>
-              <div className="w-full relative py-1.5">
-                <label htmlFor="Email" className="font-semibold text-md">
-                  Email
-                </label>
-                <div className="relative  py-1.5 border-2 rounded-md border-gray-300 focus:border-2 focus:border-gray-300 hover:border-black">
-                  <input
-                    name="email"
-                    required={true}
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Name@email.com"
-                    className=" w-[85%] border-0  ps-1.5 text-md font-semibold  outline-0  placeholder:font-normal"
-                  />
-                  <div className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-500">
-                    {loading && <PuffLoader size={20} color="#6a7282" />}
+            <div className=" flex justify-between flex-col h-full  ">
+              <div>
+                <h3 className="text-xl font-semibold py-3">
+                  Continue with your email
+                </h3>
+                <div className="w-full relative py-1.5">
+                  <label htmlFor="Email" className="font-semibold text-md">
+                    Email
+                  </label>
+                  <div className="relative  py-1.5 border-2 rounded-md border-gray-300 focus:border-2 focus:border-gray-300 hover:border-black">
+                    <input
+                      name="email"
+                      required={true}
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="Name@email.com"
+                      className=" w-[85%] border-0  ps-1.5 text-md font-semibold  outline-0  placeholder:font-normal"
+                    />
+                    <div className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-500">
+                      {loading && <PuffLoader size={20} color="#6a7282" />}
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="w-full py-1.5">
-                <label htmlFor="Email" className="font-semibold text-md">
-                  Password
-                </label>
-                <div className="relative  py-1.5 border-2 rounded-md border-gray-300 focus:border-2 focus:border-gray-300 hover:border-black">
-                  <input
-                    required={true}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    name="password"
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Enter Your Password"
-                    className="  w-[85%] border-0  ps-1.5 text-md font-semibold  outline-0  placeholder:font-normal 
+                <div className="w-full py-1.5">
+                  <label htmlFor="Email" className="font-semibold text-md">
+                    Password
+                  </label>
+                  <div className="relative  py-1.5 border-2 rounded-md border-gray-300 focus:border-2 focus:border-gray-300 hover:border-black">
+                    <input
+                      required={true}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      name="password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Enter Your Password"
+                      className="  w-[85%] border-0  ps-1.5 text-md font-semibold  outline-0  placeholder:font-normal 
                 "
-                  />
-                  <div
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute top-1/2 right-4 -translate-y-1/2"
-                  >
-                    {showPassword ? (
-                      <MdOutlineRemoveRedEye
-                        size={18}
-                        className="active:scale-95 cursor-pointer"
-                      />
-                    ) : (
-                      <FaRegEyeSlash
-                        size={18}
-                        className="active:scale-95 cursor-pointer"
-                      />
-                    )}
+                    />
+                    <div
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute top-1/2 right-4 -translate-y-1/2"
+                    >
+                      {showPassword ? (
+                        <MdOutlineRemoveRedEye
+                          size={18}
+                          className="active:scale-95 cursor-pointer"
+                        />
+                      ) : (
+                        <FaRegEyeSlash
+                          size={18}
+                          className="active:scale-95 cursor-pointer"
+                        />
+                      )}
+                    </div>
                   </div>
+                  <button onClick={() => setShowPassScreen(true)} className="ms-auto text-end block font-semibold text-gray-600">Forget Password?</button>
                 </div>
-              </div>
 
-              <div className="my-4 space-y-2">
-                {passwordRules.map((rule, index) => (
-                  <div key={index} className="flex items-center gap-2">
-                    <span
-                      className={`border-2 rounded-full p-1 flex items-center justify-center w-5 h-5 ${
-                        ruleStates[rule.key]
+                <div className="my-4 space-y-2">
+                  {passwordRules.map((rule, index) => (
+                    <div key={index} className="flex items-center gap-2">
+                      <span
+                        className={`border-2 rounded-full p-1 flex items-center justify-center w-5 h-5 ${ruleStates[rule.key]
                           ? "bg-green-500 text-white border-green-500"
                           : "border-gray-300 text-gray-500"
-                      }`}
-                    >
-                      <IoMdCheckmark size={12} />
-                    </span>
-                    <p
-                      className={`text-sm font-semibold ${
-                        ruleStates[rule.key]
+                          }`}
+                      >
+                        <IoMdCheckmark size={12} />
+                      </span>
+                      <p
+                        className={`text-sm font-semibold ${ruleStates[rule.key]
                           ? "text-green-600 line-through"
                           : "text-gray-600"
-                      }`}
-                    >
-                      {rule.label}
-                    </p>
-                  </div>
-                ))}
+                          }`}
+                      >
+                        {rule.label}
+                      </p>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
 
-            <div className="w-full items-baseline">
-              <button
-                type="button"
-                disabled={!isPasswordValid}
-                onClick={() => setClicked(true)}
-                className={`py-1.5 border-2 rounded-md  w-full font-semibold  ${
-                  !isPasswordValid
+              <div className="w-full items-baseline">
+                <button
+                  type="button"
+                  disabled={!isPasswordValid}
+                  onClick={() => setClicked(true)}
+                  className={`py-1.5 border-2 rounded-md  w-full font-semibold  ${!isPasswordValid
                     ? "cursor-not-allowed text-gray-400 bg-gray-100 border-gray-300"
                     : "cursor-pointer bg-gray-950 text-white  hover:bg-gray-950/80 hover:text-white border-gray-950"
-                }  `}
-              >
-                {exist == "Email Already Existed" ? "Sign In" : "Continue"}
-              </button>
+                    }  `}
+                >
+                  {exist == "Email Already Existed" ? "Sign In" : "Continue"}
+                </button>
+              </div>
             </div>
           </div>
-        </div>
+        )
       )}
     </>
   );
