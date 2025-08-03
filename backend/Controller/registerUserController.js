@@ -179,11 +179,27 @@ export const sendResetLink = async (req, res) => {
     }
 
     // // genetate the reset token
-    let token = otpgenerator.generate(50)
+    let token = otpgenerator.generate(50, { specialChars: false })
     checkUser.resetToken = token
     await checkUser.save()
     // send the reset link to the user
     let link = `http://localhost:5173/reset-password/${token}`
     sendResetMail(email, link)
     res.send(checkUser)
+}
+
+
+export const resetPassword = async (req, res) => {
+    let token = req.params.token
+    const { password } = req.body
+    let findUser = await Users.findOne({ resetToken: token })
+    if (!findUser) {
+        res.status(401)
+        throw new Error('Invalid Token')
+    }
+    let hash = await bcrypt.hash(password, 10)
+    findUser.password = hash
+    findUser.resetToken = null
+    await findUser.save()
+    res.send(findUser)
 }
