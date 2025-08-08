@@ -5,6 +5,8 @@ import { PuffLoader } from "react-spinners";
 import toast from "react-hot-toast";
 import axios from "axios";
 import Otp from "./Otp";
+import { useDispatch } from "react-redux";
+import { registerUser } from "../features/users/userSlice";
 
 const ThirdContent = ({ handleBack }) => {
   const {
@@ -102,21 +104,14 @@ const ThirdContent = ({ handleBack }) => {
     }
   }, [userName]);
 
+  const dispatch = useDispatch()
+
   const handelSignUp = async () => {
     setClicked(true);
 
-    try {
-      let response = await axios.post(
-        "http://localhost:5174/api/users/register-user",
-        { email, password, userName }
-      );
+    dispatch(registerUser({ email, password, userName }))
 
-      localStorage.setItem('user', JSON.stringify(response.data))
 
-      console.log(response.data);
-    } catch (error) {
-      toast.error(error);
-    }
   };
 
   return (

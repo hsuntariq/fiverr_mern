@@ -2,6 +2,7 @@ import React, { useContext, useEffect } from "react";
 import { AppContext } from "../context/Context";
 import FirstContent from "./FirstContent";
 import SecondContent from "./SecondContent";
+import { ThemeContext } from "../context/ThemeContent";
 
 const RegPopUp = () => {
   const { clicked, RegPopUpPic, setRegPopUpPic } = useContext(AppContext);
@@ -25,6 +26,8 @@ const RegPopUp = () => {
       return "https://fiverr-res.cloudinary.com/npm-assets/layout-service/with_activation.0dc070c.png";
     return null;
   };
+
+  const { dark } = useContext(ThemeContext)
 
   return (
     <div className="min-h-screen w-full fixed top-0 left-0 bg-black/50 flex justify-center items-center z-50">

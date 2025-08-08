@@ -6,6 +6,11 @@ import { Toaster } from "react-hot-toast"
 import Main from "./pages/Main";
 import AddResetPassword from "./components/AddResetPassword";
 const App = () => {
+
+
+
+
+
   return (
     <>
       <Toaster />
@@ -14,6 +19,7 @@ const App = () => {
           <Route path="/" element={<Home />}></Route>
           <Route path='/home' element={<Main />} />
           <Route path='/reset-password/:token' element={<AddResetPassword />} />
+          {/* <Route path='*' element={<Error />} /> */}
         </Routes>
       </Router>
     </>

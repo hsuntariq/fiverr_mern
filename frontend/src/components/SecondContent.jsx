@@ -9,6 +9,8 @@ import { PuffLoader } from "react-spinners";
 import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
 import ResetPassword from "./ResetPassword";
+import { useDispatch, useSelector } from 'react-redux'
+import { checkMail } from "../features/users/userSlice";
 const SecondContent = () => {
   const {
     handleBackModal,
@@ -62,26 +64,28 @@ const SecondContent = () => {
     setIsPasswordValid(allPassedRules);
   }, [password]);
 
-  const checkMail = async () => {
-    try {
-      if (!email) return;
-      if (email) {
-        setLoading(true);
-        let response = await axios.post(
-          "http://localhost:5174/api/users/verify-mail",
-          { email }
-        );
-        setExist(response.data);
-        setLoading(false);
-      }
-    } catch (error) {
-      toast.error(error);
+
+  const dispatch = useDispatch()
+
+
+  const { userError, userLoading, userMessage } = useSelector((state) => state.auth)
+
+
+
+  useEffect(() => {
+    if (userError) {
+      toast.error(userMessage)
     }
-  };
+  }, [userError])
+
+
+
 
   useEffect(() => {
     let debounce = setTimeout(() => {
-      checkMail();
+      if (email) {
+        dispatch(checkMail(email))
+      }
     }, 500);
 
     return () => {

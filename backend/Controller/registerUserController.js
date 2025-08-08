@@ -59,7 +59,8 @@ export const checkMail = async (req, res) => {
 
 
     if (isUsers) {
-        res.send("Email Already Existed")
+        res.status(401)
+        throw new Error('Email already Exists')
     } else {
         res.send("Email Not Existed")
     }
